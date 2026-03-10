@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Sentinel</title>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        width: 420px;
+        min-height: 300px;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: #070d15;
+        color: #c8d6e5;
+        padding: 0;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #0c1a2a 0%, #070d15 100%);
+        padding: 18px 20px 14px;
+        border-bottom: 1px solid #0e3d6b;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .header img.logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        object-fit: contain;
+      }
+
+      .header .logo-placeholder {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #1a8aaa, #0e5f8a);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 800;
+        color: #fff;
+      }
+
+      .header-text h1 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 1px;
+      }
+
+      .header-text p {
+        font-size: 11px;
+        color: #4a8ab5;
+        margin-top: 2px;
+      }
+
+      .status-bar {
+        background: #0b1520;
+        padding: 10px 20px;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid #0e3d6b;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      .status-dot.disconnected { background: #4a5568; }
+      .status-dot.connected { background: #38d9a9; }
+
+      .actions {
+        padding: 16px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 14px 16px;
+        border: none;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+      .btn:active { transform: translateY(0); }
+      .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+      .btn-gmail {
+        background: linear-gradient(135deg, #1a8aaa, #0e5f8a);
+        color: #fff;
+      }
+
+      .btn-scan {
+        background: linear-gradient(135deg, #0e5f8a, #0a3d5c);
+        color: #fff;
+        border: 1px solid #1a8aaa;
+      }
+
+      .btn-page {
+        background: #0f2035;
+        color: #6badd6;
+        border: 1px solid #1a3a55;
+      }
+
+      .btn-disconnect {
+        background: transparent;
+        color: #4a5568;
+        font-size: 12px;
+        padding: 6px;
+        font-weight: 400;
+        text-decoration: underline;
+      }
+
+      .scan-count {
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #4a8ab5;
+      }
+
+      .scan-count select {
+        background: #0f2035;
+        color: #c8d6e5;
+        border: 1px solid #1a3a55;
+        border-radius: 6px;
+        padding: 4px 8px;
+        font-size: 13px;
+      }
+
+      .progress-bar {
+        height: 3px;
+        background: #0e3d6b;
+        margin: 0 20px;
+        border-radius: 2px;
+        overflow: hidden;
+        display: none;
+      }
+
+      .progress-bar.active { display: block; }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #1a8aaa, #38d9a9);
+        width: 0%;
+        transition: width 0.4s;
+        border-radius: 2px;
+      }
+
+      .results {
+        padding: 12px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .results::-webkit-scrollbar { width: 4px; }
+      .results::-webkit-scrollbar-thumb { background: #1a3a55; border-radius: 2px; }
+
+      .email-card {
+        background: #0b1a28;
+        border-radius: 10px;
+        padding: 14px 16px;
+        border-left: 4px solid #4a5568;
+      }
+
+      .email-card.risk-low { border-left-color: #38d9a9; }
+      .email-card.risk-medium { border-left-color: #f0b429; }
+      .email-card.risk-high { border-left-color: #e74c3c; }
+
+      .email-card .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 8px;
+      }
+
+      .email-card .sender {
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        max-width: 260px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .email-card .subject {
+        font-size: 12px;
+        color: #4a8ab5;
+        margin-bottom: 8px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .risk-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 12px;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .risk-badge.low { background: rgba(56,217,169,0.15); color: #38d9a9; }
+      .risk-badge.medium { background: rgba(240,180,41,0.15); color: #f0b429; }
+      .risk-badge.high { background: rgba(231,76,60,0.15); color: #e74c3c; }
+
+      .email-card .analysis-text {
+        font-size: 13px;
+        line-height: 1.5;
+        color: #8fa8c4;
+        white-space: pre-wrap;
+      }
+
+      .info-message {
+        text-align: center;
+        padding: 20px;
+        color: #4a8ab5;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .info-message .icon {
+        font-size: 32px;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="logo-placeholder">S</div>
+      <div class="header-text">
+        <h1>SENTINEL</h1>
+        <p>AI-driven e-postskydd</p>
+      </div>
+    </div>
+
+    <div class="status-bar" id="status-bar">
+      <span class="status-dot disconnected" id="status-dot"></span>
+      <span id="status-text">Gmail ej ansluten</span>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-gmail" id="connect-gmail">Koppla ditt Gmail-konto</button>
+      <div class="scan-count">
+        <label for="email-count">Antal mejl att skanna:</label>
+        <select id="email-count">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+      <button class="btn btn-scan" id="scan-gmail" disabled>Skanna mina mejl</button>
+      <button class="btn btn-page" id="analyze">Analysera aktuell webbsida</button>
+      <button class="btn btn-disconnect" id="disconnect-gmail" style="display:none;">Koppla bort Gmail</button>
+    </div>
+
+    <div class="progress-bar" id="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <div class="results" id="results">
+      <div class="info-message">
+        <div class="icon">&#128737;</div>
+        Koppla ditt Gmail-konto och skanna dina mejl.<br>
+        Sentinel kontrollerar avsändare, domäner, länkar och innehåll.
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

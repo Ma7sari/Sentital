@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Sentinel",
+  "version": "1.0",
+  "description": "AI-driven e-postskydd – skannar Gmail och upptäcker phishing, spoofing och bedrägerier",
+  "permissions": ["activeTab", "scripting", "identity", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "oauth2": {
+    "client_id": "686291043281-mif5s1jk2ajqghdlf9s36c3fuilvoh58.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.readonly"
+    ]
+  }
+}

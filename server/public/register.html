@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Berätta lite om dig – Vakt</title>
+  <style>
+    :root {
+      --bg: #f5f3ef;
+      --surface: #fff;
+      --text: #2c2c2c;
+      --muted: #5a5a5a;
+      --green: #2d9d78;
+      --border: #ddd;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 440px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+    .progress-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 48px;
+    }
+    .progress-step {
+      flex: 1;
+      height: 4px;
+      background: #ddd;
+      border-radius: 2px;
+    }
+    .progress-step.active {
+      background: var(--green);
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+    .form-group {
+      margin-bottom: 24px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--text);
+    }
+    .form-group input::placeholder {
+      color: #999;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--green);
+    }
+    .btn-continue {
+      width: 100%;
+      padding: 16px 24px;
+      margin-top: 20px;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-continue:hover {
+      background: #ebe8e2;
+      border-color: var(--muted);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      margin-bottom: 40px;
+    }
+    .nav-logo .icon {
+      width: 36px;
+      height: 36px;
+      background: var(--green);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-logo .icon svg {
+      width: 24px;
+      height: 24px;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="/" class="nav-logo">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      Vakt
+    </a>
+
+    <div class="progress-bar">
+      <div class="progress-step active"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+    </div>
+
+    <h1>Berätta lite om dig</h1>
+    <p class="subtitle">Vi behöver dina kontaktuppgifter för att kunna varna dig.</p>
+
+    <form id="register-form">
+      <div class="form-group">
+        <label for="name">Ditt namn</label>
+        <input type="text" id="name" name="name" placeholder="Anna Andersson" required>
+      </div>
+      <div class="form-group">
+        <label for="phone">Telefonnummer</label>
+        <input type="tel" id="phone" name="phone" placeholder="070-123 45 67" required>
+      </div>
+      <div class="form-group">
+        <label for="email">E-postadress</label>
+        <input type="email" id="email" name="email" placeholder="anna@exempel.se" required>
+      </div>
+      <button type="submit" class="btn-continue">Fortsätt</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('register-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const email = document.getElementById('email').value.trim();
+
+      if (!name || !phone || !email) return;
+
+      sessionStorage.setItem('vakt_registration', JSON.stringify({ name, phone, email }));
+      window.location.href = '/auth/google';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vad vill du bevaka? – Vakt</title>
+  <style>
+    :root {
+      --bg: #f5f3ef;
+      --surface: #fff;
+      --text: #2c2c2c;
+      --muted: #5a5a5a;
+      --green: #2d9d78;
+      --green-light: #d4f1e6;
+      --border: #ddd;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 32px 24px 48px;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 15px;
+      margin-bottom: 40px;
+    }
+    .back-link:hover { color: var(--text); }
+    .back-link svg { width: 20px; height: 20px; }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+    .option-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px;
+      margin-bottom: 12px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .option-card.selected {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+    .option-card .icon {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+    }
+    .option-card .icon svg { width: 28px; height: 28px; }
+    .option-card .content {
+      flex: 1;
+    }
+    .option-card .content h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .option-card .content p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .option-card .check {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      background: var(--surface);
+    }
+    .option-card.selected .check {
+      background: var(--green);
+      border-color: var(--green);
+    }
+    .option-card.selected .check svg { display: block; }
+    .option-card .check svg { display: none; width: 14px; height: 14px; }
+    .btn-activate {
+      width: 100%;
+      padding: 18px 24px;
+      margin-top: 32px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-activate:hover {
+      background: #238f6a;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="/dashboard" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Tillbaka
+    </a>
+
+    <h1>Vad vill du bevaka?</h1>
+    <p class="subtitle">Välj vad du vill att vi håller koll på. Du kan ändra detta senare.</p>
+
+    <div class="option-card selected" data-option="emails">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+      </div>
+      <div class="content">
+        <h3>Osäkra e-postmeddelanden</h3>
+        <p>Vi varnar dig om misstänkta mejl</p>
+      </div>
+      <div class="check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+    </div>
+
+    <div class="option-card selected" data-option="links">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+      </div>
+      <div class="content">
+        <h3>Misstänkta länkar</h3>
+        <p>Vi kontrollerar om en länk är säker</p>
+      </div>
+      <div class="check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+    </div>
+
+    <div class="option-card selected" data-option="leaks">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <div class="content">
+        <h3>Läckta uppgifter</h3>
+        <p>Vi meddelar dig om dina uppgifter hittas på osäkra platser</p>
+      </div>
+      <div class="check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+    </div>
+
+    <button class="btn-activate" id="btn-activate">Aktivera skydd</button>
+  </div>
+
+  <script>
+    document.querySelectorAll('.option-card').forEach(card => {
+      card.addEventListener('click', () => {
+        card.classList.toggle('selected');
+      });
+    });
+
+    document.getElementById('btn-activate').addEventListener('click', () => {
+      const selected = Array.from(document.querySelectorAll('.option-card.selected'))
+        .map(c => c.dataset.option);
+      sessionStorage.setItem('vakt_monitoring', JSON.stringify(selected));
+      window.location.href = '/protected';
+    });
+  </script>
+</body>
+</html>

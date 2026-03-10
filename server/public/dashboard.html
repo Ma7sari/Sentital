@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Översikt – Vakt</title>
+  <style>
+    :root {
+      --bg: #f5f3ef;
+      --surface: #fff;
+      --text: #2c2c2c;
+      --muted: #5a5a5a;
+      --green: #2d9d78;
+      --green-dark: #238f6a;
+      --yellow: #eab308;
+      --red: #dc2626;
+      --border: #ddd;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    nav {
+      padding: 20px 32px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-logo .icon {
+      width: 40px;
+      height: 40px;
+      background: var(--green);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-logo .icon svg { width: 24px; height: 24px; color: #fff; }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-info img { width: 36px; height: 36px; border-radius: 50%; }
+    .user-info span { color: var(--muted); font-size: 14px; }
+    .btn-logout {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-left: 12px;
+      text-decoration: none;
+    }
+    .btn-logout:hover { color: var(--text); border-color: var(--muted); }
+    .main {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+    .status-header {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 32px;
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    .event-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+      text-align: left;
+    }
+    .event-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .event-card.border-info { border-left: 4px solid var(--green); }
+    .event-card.border-warning { border-left: 4px solid var(--yellow); }
+    .event-card.border-important { border-left: 4px solid var(--red); }
+    .event-card .content {
+      flex: 1;
+      min-width: 0;
+    }
+    .event-card .meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .event-card .type {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .event-card .type.info { color: var(--green); }
+    .event-card .type.warning { color: #b8860b; }
+    .event-card .type.important { color: var(--red); }
+    .event-card .time {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .event-card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .event-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .event-card .chevron {
+      flex-shrink: 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+    .scan-section {
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    .status-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 28px;
+    }
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+    .scan-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .scan-controls label { color: var(--muted); font-size: 14px; }
+    .scan-controls select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .btn-scan {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-scan:hover { background: var(--green-dark); }
+    .btn-scan:disabled { opacity: 0.5; cursor: not-allowed; }
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 20px;
+      overflow: hidden;
+      display: none;
+    }
+    .progress-bar.active { display: block; }
+    .progress-fill {
+      height: 100%;
+      background: var(--green);
+      width: 0%;
+      transition: width 0.3s;
+    }
+    .email-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border-left: 4px solid #ccc;
+    }
+    .email-card.risk-low { border-left-color: var(--green); }
+    .email-card.risk-medium { border-left-color: var(--yellow); }
+    .email-card.risk-high { border-left-color: var(--red); }
+    .email-card .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .email-card .sender { font-size: 15px; font-weight: 600; }
+    .risk-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+    .risk-badge.low { background: rgba(45,157,120,0.15); color: var(--green); }
+    .risk-badge.medium { background: rgba(234,179,8,0.15); color: #b8860b; }
+    .risk-badge.high { background: rgba(220,38,38,0.15); color: var(--red); }
+    .email-card .subject { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+    .email-card .analysis-text { font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
+    .error-msg {
+      background: rgba(220,38,38,0.1);
+      border: 1px solid rgba(220,38,38,0.2);
+      color: var(--red);
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/dashboard" class="nav-logo">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      Vakt
+    </a>
+    <div class="user-info">
+      <img id="user-avatar" src="" alt="">
+      <span id="user-name"></span>
+      <a href="/auth/logout" class="btn-logout">Logga ut</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <p class="status-header">Allt är lugnt</p>
+
+    <h2 class="section-title">Senaste händelser</h2>
+
+    <div id="events-list">
+      <div class="event-card border-info">
+        <div class="content">
+          <div class="meta">
+            <span class="type info">Information</span>
+            <span class="time">Idag, 09:15</span>
+          </div>
+          <h3>Nytt lösenord skapat</h3>
+          <p>Du ändrade lösenord på din e-post igår.</p>
+        </div>
+        <span class="chevron">›</span>
+      </div>
+      <div class="event-card border-warning">
+        <div class="content">
+          <div class="meta">
+            <span class="type warning">Varning</span>
+            <span class="time">Igår, 14:30</span>
+          </div>
+          <h3>Misstänkt länk upptäckt</h3>
+          <p>Vi hittade en länk som kan vara osäker i ett mejl.</p>
+        </div>
+        <span class="chevron">›</span>
+      </div>
+      <div class="event-card border-important">
+        <div class="content">
+          <div class="meta">
+            <span class="type important">Viktigt</span>
+            <span class="time">2 mars, 11:00</span>
+          </div>
+          <h3>Dina uppgifter kan ha läckt</h3>
+          <p>Din e-postadress hittades på en osäker webbplats.</p>
+        </div>
+        <span class="chevron">›</span>
+      </div>
+      <div class="event-card border-info">
+        <div class="content">
+          <div class="meta">
+            <span class="type info">Information</span>
+            <span class="time">28 feb, 08:00</span>
+          </div>
+          <h3>Veckorapport</h3>
+          <p>Inga hot upptäcktes den senaste veckan.</p>
+        </div>
+        <span class="chevron">›</span>
+      </div>
+    </div>
+
+    <div class="scan-section">
+      <h2 class="section-title">Skanna mejl</h2>
+      <div class="status-card">
+        <div class="status-row">
+          <span class="status-dot"></span>
+          <span>Gmail ansluten</span>
+        </div>
+        <div class="scan-controls">
+          <label for="email-count">Antal mejl:</label>
+          <select id="email-count">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+          <button class="btn-scan" id="btn-scan">Skanna mina mejl</button>
+        </div>
+        <div class="progress-bar" id="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+      <div id="error-container"></div>
+      <div id="results-list"></div>
+    </div>
+  </main>
+
+  <script>
+    const resultsList = document.getElementById('results-list');
+    const progressBar = document.getElementById('progress-bar');
+    const progressFill = document.getElementById('progress-fill');
+    const btnScan = document.getElementById('btn-scan');
+    const errorContainer = document.getElementById('error-container');
+
+    async function loadUser() {
+      const r = await fetch('/api/auth/me');
+      if (!r.ok) {
+        window.location.href = '/?login=required';
+        return;
+      }
+      const { user } = await r.json();
+      document.getElementById('user-name').textContent = user.name || user.email;
+      document.getElementById('user-avatar').src = user.picture || '';
+      document.getElementById('user-avatar').alt = user.name || '';
+    }
+
+    function detectRisk(text) {
+      const lower = (text || '').toLowerCase();
+      if (lower.includes('hög risk') || lower.includes('hög')) return 'high';
+      if (lower.includes('medel')) return 'medium';
+      return 'low';
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function renderScanResults(analyses) {
+      resultsList.innerHTML = '';
+      for (const a of analyses) {
+        const risk = detectRisk(a.analysis);
+        const riskLabel = risk === 'high' ? 'Hög risk' : risk === 'medium' ? 'Medel risk' : 'Låg risk';
+        const card = document.createElement('div');
+        card.className = `email-card risk-${risk}`;
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="sender">${escapeHtml(a.from || '(okänd)')}</span>
+            <span class="risk-badge ${risk}">${riskLabel}</span>
+          </div>
+          <div class="subject">${escapeHtml(a.subject || '(inget ämne)')}</div>
+          <div class="analysis-text">${escapeHtml(a.analysis)}</div>
+        `;
+        resultsList.appendChild(card);
+      }
+    }
+
+    btnScan.addEventListener('click', async () => {
+      errorContainer.innerHTML = '';
+      btnScan.disabled = true;
+      progressBar.classList.add('active');
+      progressFill.style.width = '20%';
+
+      try {
+        const limit = parseInt(document.getElementById('email-count').value) || 10;
+        progressFill.style.width = '50%';
+        const r = await fetch('/api/gmail/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ limit }),
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || 'Skanningsfel');
+        progressFill.style.width = '100%';
+        renderScanResults(data.analyses || []);
+      } catch (e) {
+        errorContainer.innerHTML = `<div class="error-msg">${escapeHtml(e.message || 'Kunde inte skanna mejl.')}</div>`;
+      } finally {
+        btnScan.disabled = false;
+        progressFill.style.width = '0%';
+        setTimeout(() => progressBar.classList.remove('active'), 500);
+      }
+    });
+
+    loadUser();
+  </script>
+</body>
+</html>

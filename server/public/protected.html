@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Du är nu skyddad – Vakt</title>
+  <style>
+    :root {
+      --bg: #f5f3ef;
+      --text: #2c2c2c;
+      --muted: #5a5a5a;
+      --green: #2d9d78;
+      --blue: #2563eb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .nav-logo {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-logo .icon {
+      width: 36px;
+      height: 36px;
+      background: var(--green);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-logo .icon svg {
+      width: 24px;
+      height: 24px;
+      color: #fff;
+    }
+    .content {
+      text-align: center;
+      max-width: 400px;
+    }
+    .shield-large {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 24px;
+      background: var(--green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .shield-large svg {
+      width: 64px;
+      height: 64px;
+      color: #fff;
+    }
+    .status-ok {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .description {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+    .btn-overview {
+      display: inline-block;
+      padding: 16px 32px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-overview:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="/" class="nav-logo">
+    <div class="icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    </div>
+    Vakt
+  </a>
+
+  <div class="content">
+    <div class="shield-large">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    </div>
+    <p class="status-ok">Allt är lugnt</p>
+    <h1>Du är nu skyddad</h1>
+    <p class="description">Vi håller koll åt dig. Du får ett meddelande om vi upptäcker något misstänkt.</p>
+    <a href="/dashboard" class="btn-overview">Gå till din översikt</a>
+  </div>
+</body>
+</html>
