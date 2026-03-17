@@ -47,6 +47,17 @@ function requireAuth(req, res, next) {
 
 // ── OAuth routes ───────────────────────────────────────────────
 
+app.get("/demo", (req, res) => {
+  req.session.user = {
+    id: "demo",
+    email: "demo@sentinel.se",
+    name: "Demo Användare",
+    picture: "",
+  };
+  req.session.tokens = null;
+  res.redirect("/monitor");
+});
+
 app.get("/auth/google", (req, res) => {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
     return res.redirect("/?error=oauth_not_configured");
@@ -352,19 +363,57 @@ app.post("/api/gmail/scan", requireAuth, async (req, res) => {
 
 // ── Legacy API (för extension om den används) ──────────────────
 
+const PAGE_ANALYZE_PROMPT = `Du är en säkerhetsexpert som bedömer om webbsidor är äkta eller falska (phishing, scam, bedrägeri).
+
+Analysera sidan och bedöm:
+
+1. ÄKTHET
+   - Ser sidan ut att vara en legitim tjänst eller en imitation?
+   - Matchar innehållet domänen/URL:en? (t.ex. "PayPal" på paypa1-fake.com = falsk)
+   - Finns tecken på varumärkesimitation?
+
+2. URL & DOMÄN
+   - Ser domänen misstänkt ut? (stavfel, onaturliga suffix, IP-adresser)
+   - Är URL:en ovanligt lång eller innehåller den många parametrar?
+   - Använder sidan HTTPS?
+
+3. INNEHÅLL
+   - Brådskande språk? ("Ditt konto stängs", "Agera nu", "Sista chansen")
+   - Begär sidan lösenord, kortnummer eller personlig information?
+   - Grammatik- och stavfel som tyder på bedrägeri?
+   - Länkar som pekar till andra misstänkta domäner?
+
+4. TRUST-INDIKATORER
+   - Nämns etablerade företag, banker eller tjänster?
+   - Finns kontaktuppgifter som verkar legitima?
+
+SVARA på svenska i detta format:
+Bedömning: [Äkta / Troligen äkta / Osäker / Troligen falsk / Falsk]
+
+URL: [kort bedömning av domänen]
+Innehåll: [kort bedömning]
+Risknivå: [Låg / Medel / Hög]
+
+Sammanfattning: [1-2 meningar som förklarar om sidan verkar äkta eller inte, och vad användaren bör tänka på]`;
+
 app.post("/analyze", async (req, res) => {
   try {
     const text = (req.body?.text || "").slice(0, 12000);
+    const url = req.body?.url || "";
     if (!text.trim()) return res.status(400).json({ error: "Ingen text mottogs" });
+
+    const content = url
+      ? `URL: ${url}\n\n=== SIDINNEHÅLL ===\n${text}`
+      : text;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: "Analysera sidan kort och tydligt. Svara på svenska." },
-        { role: "user", content: text },
+        { role: "system", content: PAGE_ANALYZE_PROMPT },
+        { role: "user", content },
       ],
-      temperature: 0.2,
-      max_tokens: 300,
+      temperature: 0.1,
+      max_tokens: 450,
     });
 
     res.json({ analysis: completion.choices[0].message.content });

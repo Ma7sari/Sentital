@@ -410,7 +410,7 @@ $("analyze").addEventListener("click", async () => {
     const r = await fetch(`${API_BASE}/analyze`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: pageText }),
+      body: JSON.stringify({ text: pageText, url: tab.url }),
     });
     const data = await r.json();
     if (data.analysis) {
