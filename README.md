@@ -52,6 +52,25 @@ npm start
 
 Öppna [http://localhost:3000](http://localhost:3000) i webbläsaren.
 
+## Deploy på Railway
+
+Railpack hittar ofta inget Node-projekt i roten om bara `server/` har `package.json`. Det här repot har nu:
+
+- **`Dockerfile`** i roten – sätt i Railway **Root Directory** till `.` (repo root) så byggs containern från `server/`.
+- Alternativ: sätt **Root Directory** till `server` och **Start Command** till `node server.js` (ingen Docker).
+
+**Miljövariabler på Railway** (Variables):
+
+| Variabel | Beskrivning |
+|----------|-------------|
+| `OPENAI_API_KEY` | Din OpenAI-nyckel |
+| `GOOGLE_CLIENT_ID` | Web OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Web OAuth client secret |
+| `GOOGLE_REDIRECT_URI` | `https://DIN-APP.up.railway.app/auth/google/callback` |
+| `SESSION_SECRET` | Lång slumpmässig sträng |
+
+Lägg samma redirect-URL i Google Cloud → OAuth client → Authorized redirect URIs.
+
 ## Flöde
 
 1. **Startsida** – Klicka "Logga in med Google"

@@ -1,0 +1,8 @@
+node_modules
+server/node_modules
+.git
+extension
+website
+*.md
+.env
+**/.env

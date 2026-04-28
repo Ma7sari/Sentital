@@ -1,0 +1,13 @@
+{
+  "name": "sentinel",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sentinel web – deploy root (kör server/)",
+  "scripts": {
+    "build": "npm ci --prefix server",
+    "start": "node server/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
