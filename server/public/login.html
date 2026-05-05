@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Testinloggning – Sentinel</title>
+  <title>Logga in – Sentinel</title>
   <style>
     :root {
       --bg: #f5f3ef;
@@ -130,8 +130,8 @@
       SENTINEL
     </a>
 
-    <h1>Testinloggning</h1>
-    <p class="subtitle">För utveckling när Google OAuth inte fungerar. Använder fictiva exempel-mejl — ingen riktig Gmail kopplas.</p>
+    <h1>Logga in</h1>
+    <p class="subtitle">Har du klickat <strong>Fortsätt</strong> på registreringen anger du lösenordet som servern kallar <code style="font-size:13px;">DEV_LOGIN_SECRET</code>. Med Google använder du knappen på föregående sida istället.</p>
 
     <div class="hint">Sätt miljövariabeln <strong>DEV_LOGIN_SECRET</strong> på servern (t.ex. i Railway Variables) till ett starkt lösenord. Ange samma värde här.</div>
 
@@ -160,6 +160,15 @@
     const form = document.getElementById('form');
     const err = document.getElementById('err');
     const btn = document.getElementById('btn');
+
+    try {
+      const raw = sessionStorage.getItem('vakt_registration');
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.name) document.getElementById('name').value = d.name;
+        if (d.email) document.getElementById('email').value = d.email;
+      }
+    } catch (_) {}
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
