@@ -14,11 +14,22 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = process.env.PORT || 3000;
 
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI || `http://localhost:${port}/auth/google/callback`
-);
+/** Bakom Railway/reverse proxy måste Express lita på X-Forwarded-* (HTTPS, IP). */
+app.set("trust proxy", 1);
+
+function getGoogleOAuthConfig() {
+  const clientId = process.env.GOOGLE_CLIENT_ID?.trim() || "";
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim() || "";
+  const redirectUri =
+    process.env.GOOGLE_REDIRECT_URI?.trim() ||
+    `http://localhost:${port}/auth/google/callback`;
+  return { clientId, clientSecret, redirectUri };
+}
+
+function createOAuth2Client() {
+  const { clientId, clientSecret, redirectUri } = getGoogleOAuthConfig();
+  return new google.auth.OAuth2(clientId, clientSecret, redirectUri);
+}
 
 let cachedOpenAI = null;
 function getOpenAI() {
@@ -105,12 +116,23 @@ function useGmailMock(req) {
 
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "2mb" }));
+const sessionCookieSecure =
+  process.env.FORCE_SESSION_SECURE === "1" ||
+  process.env.NODE_ENV === "production";
+
 app.use(
   session({
+    name: "sentinel.sid",
     secret: process.env.SESSION_SECRET || "sentinel-secret-change-in-production",
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: process.env.NODE_ENV === "production", maxAge: 7 * 24 * 60 * 60 * 1000 },
+    proxy: true,
+    cookie: {
+      secure: sessionCookieSecure,
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    },
   })
 );
 
@@ -167,9 +189,11 @@ app.post("/auth/dev-login", (req, res) => {
 });
 
 app.get("/auth/google", (req, res) => {
-  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+  const { clientId, clientSecret } = getGoogleOAuthConfig();
+  if (!clientId || !clientSecret) {
     return res.redirect("/?error=oauth_not_configured");
   }
+  const oauth2Client = createOAuth2Client();
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: ["email", "profile", "https://www.googleapis.com/auth/gmail.readonly"],
@@ -183,6 +207,7 @@ app.get("/auth/google/callback", async (req, res) => {
     const { code } = req.query;
     if (!code) return res.redirect("/?error=no_code");
 
+    const oauth2Client = createOAuth2Client();
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
 
@@ -225,8 +250,9 @@ app.get("/api/auth/me", (req, res) => {
 
 function getGmailClient(req) {
   if (!req.session?.tokens) return null;
-  oauth2Client.setCredentials(req.session.tokens);
-  return google.gmail({ version: "v1", auth: oauth2Client });
+  const client = createOAuth2Client();
+  client.setCredentials(req.session.tokens);
+  return google.gmail({ version: "v1", auth: client });
 }
 
 function getHeader(headers, name) {
@@ -659,9 +685,24 @@ app.get("/", (req, res) => {
 });
 
 app.get("/health", (req, res) => {
+  const g = getGoogleOAuthConfig();
+  const cid = g.clientId;
+  const clientIdShapeOk = /^[0-9]+-[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$/.test(cid);
   res.json({
     ok: true,
     openai: !!process.env.OPENAI_API_KEY?.trim(),
+    devLogin: !!devLoginSecret(),
+    google: {
+      clientIdSet: !!cid,
+      clientSecretSet: !!g.clientSecret,
+      redirectUri: g.redirectUri,
+      /** Om false: ID:t ser inte ut som ett Web client-ID (kolla copy-paste / fel klienttyp). */
+      clientIdFormatWeb: clientIdShapeOk,
+    },
+    session: {
+      secureCookies: sessionCookieSecure,
+      trustProxy: app.get("trust proxy"),
+    },
   });
 });
 
