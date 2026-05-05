@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testinloggning – Sentinel</title>
+  <style>
+    :root {
+      --bg: #f5f3ef;
+      --surface: #fff;
+      --text: #2c2c2c;
+      --muted: #5a5a5a;
+      --green: #2d9d78;
+      --border: #ddd;
+      --warn: #b8860b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 440px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      margin-bottom: 32px;
+    }
+    .nav-logo .icon {
+      width: 36px;
+      height: 36px;
+      background: var(--green);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-logo .icon svg { width: 24px; height: 24px; color: #fff; }
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .hint {
+      font-size: 13px;
+      color: var(--warn);
+      background: rgba(234, 179, 8, 0.12);
+      border: 1px solid rgba(234, 179, 8, 0.35);
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--green);
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 16px 24px;
+      margin-top: 8px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-primary:hover { filter: brightness(1.05); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    .back {
+      display: inline-block;
+      margin-top: 24px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .back:hover { color: var(--text); }
+    .error-msg {
+      background: rgba(220, 38, 38, 0.1);
+      border: 1px solid rgba(220, 38, 38, 0.25);
+      color: #b91c1c;
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+    .error-msg.visible { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="nav-logo">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      SENTINEL
+    </a>
+
+    <h1>Testinloggning</h1>
+    <p class="subtitle">För utveckling när Google OAuth inte fungerar. Använder fictiva exempel-mejl — ingen riktig Gmail kopplas.</p>
+
+    <div class="hint">Sätt miljövariabeln <strong>DEV_LOGIN_SECRET</strong> på servern (t.ex. i Railway Variables) till ett starkt lösenord. Ange samma värde här.</div>
+
+    <div id="err" class="error-msg"></div>
+
+    <form id="form">
+      <div class="form-group">
+        <label for="password">Testlösenord (DEV_LOGIN_SECRET)</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required>
+      </div>
+      <div class="form-group">
+        <label for="name">Visningsnamn (valfritt)</label>
+        <input type="text" id="name" name="name" placeholder="Test User">
+      </div>
+      <div class="form-group">
+        <label for="email">E-post (valfritt)</label>
+        <input type="email" id="email" name="email" placeholder="test@example.com">
+      </div>
+      <button type="submit" class="btn-primary" id="btn">Logga in</button>
+    </form>
+
+    <a href="/register" class="back">← Tillbaka till registrering</a>
+  </div>
+
+  <script>
+    const form = document.getElementById('form');
+    const err = document.getElementById('err');
+    const btn = document.getElementById('btn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      err.classList.remove('visible');
+      err.textContent = '';
+      btn.disabled = true;
+      const password = document.getElementById('password').value;
+      const name = document.getElementById('name').value.trim() || 'Testanvändare';
+      const email = document.getElementById('email').value.trim() || 'test@sentinel.dev';
+
+      try {
+        const r = await fetch('/auth/dev-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ password, name, email }),
+        });
+        const data = await r.json().catch(() => ({}));
+        if (r.status === 404) {
+          err.textContent = 'Testinloggning är inte aktiverad på servern. Lägg till DEV_LOGIN_SECRET i miljövariabler.';
+          err.classList.add('visible');
+          return;
+        }
+        if (!r.ok) {
+          err.textContent = data.error || 'Inloggning misslyckades.';
+          err.classList.add('visible');
+          return;
+        }
+        window.location.href = '/monitor';
+      } catch {
+        err.textContent = 'Nätverksfel. Försök igen.';
+        err.classList.add('visible');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

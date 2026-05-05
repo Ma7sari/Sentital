@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Ändra till din Railway-/webbadress om du hostar denna sida separat (utan avslutande /). -->
+  <meta name="sentinel-app-origin" content="https://sentital-production.up.railway.app">
   <title>Sentinel – AI-skydd mot e-postbedrägerier</title>
   <style>
     :root {
@@ -462,9 +464,9 @@
     <ul class="nav-links">
       <li><a href="#features">Funktioner</a></li>
       <li><a href="#how">Så funkar det</a></li>
-      <li><a href="#download">Ladda ner</a></li>
+      <li><a href="#kom-igang">Kom igång</a></li>
     </ul>
-    <a href="#download" class="nav-cta">Ladda ner gratis</a>
+    <a href="/register" data-sentinel-href="register" class="nav-cta">Kom igång gratis</a>
   </nav>
 
   <!-- Hero -->
@@ -475,10 +477,7 @@
       <h1>Din digitala<br><span class="highlight">väktare mot bedrägerier</span></h1>
       <p>Sentinel skannar dina Gmail-mejl med AI och upptäcker phishing, spoofing och scam — innan du klickar på fel länk.</p>
       <div class="hero-buttons">
-        <a href="#download" class="btn-primary">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Ladda ner till Chrome
-        </a>
+        <a href="/register" data-sentinel-href="register" class="btn-primary">Kom igång gratis</a>
         <a href="#features" class="btn-secondary">Läs mer</a>
       </div>
     </div>
@@ -554,74 +553,36 @@
       <div class="step">
         <div class="step-number">1</div>
         <div class="step-content">
-          <h3>Installera tillägget</h3>
-          <p>Ladda ner Sentinel och lägg till det i Chrome. Det tar under en minut och är helt gratis.</p>
+          <h3>Öppna Sentinel på webben</h3>
+          <p>Ingen installation: du använder Sentinel som en vanlig webbplats i webbläsaren.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-number">2</div>
         <div class="step-content">
-          <h3>Koppla ditt Gmail-konto</h3>
-          <p>Klicka på "Koppla Gmail" och logga in med ditt Google-konto. Sentinel kan bara läsa mejl — aldrig skicka eller ändra något.</p>
+          <h3>Logga in med Google</h3>
+          <p>Du kopplar Gmail genom Googles inloggning. Sentinel kan bara läsa mejl — aldrig skicka eller ändra något.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-number">3</div>
         <div class="step-content">
           <h3>Skanna och bli trygg</h3>
-          <p>Välj hur många mejl du vill skanna (5, 10, 20 eller 50). AI:n analyserar varje mejl och visar en tydlig bedömning med risknivå.</p>
+          <p>Välj hur många mejl du vill skanna. AI:n analyserar varje mejl och visar en tydlig bedömning med risknivå.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA / Download -->
-  <section class="cta-section" id="download">
+  <!-- CTA -->
+  <section class="cta-section" id="kom-igang">
     <div class="cta-box">
-      <h2>Ladda ner Sentinel gratis</h2>
-      <p>Skydda dig, din familj eller ditt företag mot e-postbedrägerier.</p>
-      <a href="sentinel-extension.zip" download class="btn-primary" id="download-btn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Ladda ner till Chrome
-      </a>
-      <p style="margin-top:20px; font-size:13px;">
-        Fungerar med Google Chrome och Chromium-baserade webbläsare.
+      <h2>Kom igång med Sentinel gratis</h2>
+      <p>Öppna webbappen, logga in med Google och börja skanna din inkorg — utan zip eller sidoladdning.</p>
+      <a href="/register" data-sentinel-href="register" class="btn-primary">Öppna Sentinel</a>
+      <p style="margin-top:20px; font-size:13px; opacity:0.85;">
+        Ett valfritt webbläsartillägg (för t.ex. bedömning av webbsidor) kan komma senare via Chrome Web Store — mejlskyddet sker här i webben.
       </p>
-    </div>
-  </section>
-
-  <!-- Install guide -->
-  <section class="how-it-works" id="install-guide" style="display:none;">
-    <h2>Installationsguide</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-number">1</div>
-        <div class="step-content">
-          <h3>Packa upp filen</h3>
-          <p>Högerklicka på den nedladdade .zip-filen och välj "Extrahera allt" eller "Packa upp".</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-number">2</div>
-        <div class="step-content">
-          <h3>Öppna Chrome-tillägg</h3>
-          <p>Gå till <strong>chrome://extensions</strong> i din webbläsare. Slå på <strong>Utvecklarläge</strong> (uppe till höger).</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-number">3</div>
-        <div class="step-content">
-          <h3>Ladda in tillägget</h3>
-          <p>Klicka <strong>"Läs in okomprimerat tillägg"</strong> och välj mappen <strong>extension</strong> som du packade upp.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-number">4</div>
-        <div class="step-content">
-          <h3>Klart!</h3>
-          <p>Sentinel syns nu i din verktygsfält. Klicka på ikonen, koppla Gmail och börja skanna.</p>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -631,12 +592,13 @@
   </footer>
 
   <script>
-    document.getElementById('download-btn').addEventListener('click', () => {
-      setTimeout(() => {
-        document.getElementById('install-guide').style.display = 'block';
-        document.getElementById('install-guide').scrollIntoView({ behavior: 'smooth' });
-      }, 500);
-    });
+    (function () {
+      var meta = document.querySelector('meta[name="sentinel-app-origin"]');
+      var origin = (meta && meta.content) ? meta.content.replace(/\/$/, '') : '';
+      document.querySelectorAll('[data-sentinel-href="register"]').forEach(function (a) {
+        a.href = origin ? origin + '/register' : '/register';
+      });
+    })();
 
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {

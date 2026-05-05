@@ -379,7 +379,7 @@
         </a>
         <a href="#features" class="btn-secondary">Läs mer</a>
       </div>
-      <p class="demo-link"><a href="/demo">Se demo utan inloggning</a></p>
+      <p class="demo-link"><a href="/demo">Demo</a> · <a href="/login">Testläge utan Google</a></p>
     </div>
   </section>
 
@@ -492,7 +492,7 @@
     } else if (login === 'required') {
       document.getElementById('error-msg').innerHTML = '<div class="error-msg">Logga in för att komma åt tjänsten.</div>';
     } else if (error === 'oauth_not_configured') {
-      document.getElementById('error-msg').innerHTML = '<div class="error-msg">Google OAuth är inte konfigurerad. <a href="/demo">Se demo istället →</a></div>';
+      document.getElementById('error-msg').innerHTML = '<div class="error-msg">Google OAuth är inte konfigurerad. <a href="/demo">Demo</a> eller <a href="/login">testläge</a> (kräver DEV_LOGIN_SECRET).</div>';
     }
 
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

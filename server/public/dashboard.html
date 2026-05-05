@@ -321,7 +321,7 @@
       <div class="status-card">
         <div class="status-row">
           <span class="status-dot"></span>
-          <span>Gmail ansluten</span>
+          <span id="gmail-status">Gmail ansluten</span>
         </div>
         <div class="scan-controls">
           <label for="email-count">Antal mejl:</label>
@@ -355,10 +355,16 @@
         window.location.href = '/?login=required';
         return;
       }
-      const { user } = await r.json();
+      const { user, gmailMock } = await r.json();
       document.getElementById('user-name').textContent = user.name || user.email;
       document.getElementById('user-avatar').src = user.picture || '';
       document.getElementById('user-avatar').alt = user.name || '';
+      const statusEl = document.getElementById('gmail-status');
+      if (gmailMock) {
+        statusEl.textContent = 'Demo-läge: fictiva exempel-mejl (ingen riktig Gmail)';
+      } else {
+        statusEl.textContent = 'Gmail ansluten';
+      }
     }
 
     function detectRisk(text) {

@@ -6,6 +6,7 @@ import { google } from "googleapis";
 import OpenAI from "openai";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import crypto from "crypto";
 
 dotenv.config();
 
@@ -19,7 +20,86 @@ const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_REDIRECT_URI || `http://localhost:${port}/auth/google/callback`
 );
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+let cachedOpenAI = null;
+function getOpenAI() {
+  const key = process.env.OPENAI_API_KEY?.trim();
+  if (!key) return null;
+  if (!cachedOpenAI) cachedOpenAI = new OpenAI({ apiKey: key });
+  return cachedOpenAI;
+}
+
+function devLoginSecret() {
+  return process.env.DEV_LOGIN_SECRET?.trim() || "";
+}
+
+function safePasswordCompare(provided, expected) {
+  if (typeof provided !== "string" || typeof expected !== "string") return false;
+  const a = Buffer.from(provided, "utf8");
+  const b = Buffer.from(expected, "utf8");
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
+}
+
+/** Fictiva mejl för test utan Gmail-API (demo + dev-login). */
+function getMockSampleEmails() {
+  return [
+    {
+      from: "Säkerhet – Exempelbank <noreply@bank-example.se>",
+      subject: "Ny inloggning från okänd enhet",
+      returnPath: "<bounces@bank-example.se>",
+      replyTo: "",
+      spf: "pass",
+      authResults: "spf=pass; dkim=pass; dmarc=pass",
+      headers: [
+        { name: "From", value: "Säkerhet – Exempelbank <noreply@bank-example.se>" },
+        { name: "Subject", value: "Ny inloggning från okänd enhet" },
+        { name: "Return-Path", value: "<bounces@bank-example.se>" },
+        { name: "Authentication-Results", value: "spf=pass; dkim=pass; dmarc=pass" },
+      ],
+      snippet: "Vi noterade en inloggning från Stockholm. Om det inte var du, kontakta oss.",
+      bodyText:
+        "Hej,\n\nVi noterade en inloggning på ditt konto idag kl. 09:14 från en enhet i Stockholm.\n\nOm det var du behöver du inte göra något.\n\nMed vänliga hälsningar,\nExempelbank",
+    },
+    {
+      from: "PayPal Service <service@paypa1-security.net>",
+      subject: "Åtgärd krävs: begränsat konto",
+      returnPath: "<mail@paypa1-security.net>",
+      replyTo: "support@phish-example.invalid",
+      spf: "fail",
+      authResults: "spf=fail; dkim=none",
+      headers: [
+        { name: "From", value: "PayPal Service <service@paypa1-security.net>" },
+        { name: "Subject", value: "Åtgärd krävs: begränsat konto" },
+        { name: "Return-Path", value: "<mail@paypa1-security.net>" },
+        { name: "Reply-To", value: "support@phish-example.invalid" },
+        { name: "Received-SPF", value: "fail" },
+        { name: "Authentication-Results", value: "spf=fail; dkim=none" },
+      ],
+      snippet: "Ditt konto har begränsats. Verifiera din identitet nu...",
+      bodyText:
+        "Hej kund,\n\nVi har begränsat ditt konto på grund av misstänkt aktivitet.\n\nKlicka här för att återställa: http://paypa1-security.net/verify\n\nVi behöver ditt lösenord och kortnummer för verifiering.\n\nPayPal Team",
+    },
+    {
+      from: "Faktura <faktura@leverantor-nordic.com>",
+      subject: "Faktura 2026-1042 förfaller imorgon",
+      returnPath: "<faktura@leverantor-nordic.com>",
+      replyTo: "",
+      spf: "pass",
+      authResults: "spf=pass; dkim=pass",
+      headers: [
+        { name: "From", value: "Faktura <faktura@leverantor-nordic.com>" },
+        { name: "Subject", value: "Faktura 2026-1042 förfaller imorgon" },
+      ],
+      snippet: "Bilagd PDF med fakturauppgifter. Betalning via bankgiro.",
+      bodyText:
+        "Hej,\n\nBifogad faktura 2026-1042 på 4 250 kr inkl. moms. Förfallodatum imorgon.\n\nBankgiro: 999-1234\nReferens: INV-2026-1042\n\nMed vänlig hälsning\nLeverantör Nordic AB",
+    },
+  ];
+}
+
+function useGmailMock(req) {
+  return !!(req.session?.gmailMock && !req.session?.tokens);
+}
 
 // ── Middleware ─────────────────────────────────────────────────
 
@@ -55,7 +135,35 @@ app.get("/demo", (req, res) => {
     picture: "",
   };
   req.session.tokens = null;
+  req.session.gmailMock = true;
   res.redirect("/monitor");
+});
+
+app.get("/login", (req, res) => {
+  res.sendFile(join(__dirname, "public", "login.html"));
+});
+
+app.post("/auth/dev-login", (req, res) => {
+  const secret = devLoginSecret();
+  if (!secret) {
+    return res.status(404).json({ error: "not_found" });
+  }
+  const password = req.body?.password;
+  if (!safePasswordCompare(password || "", secret)) {
+    return res.status(401).json({ error: "Fel lösenord." });
+  }
+  const name = (req.body?.name || "Testanvändare").toString().trim().slice(0, 120) || "Testanvändare";
+  const email = (req.body?.email || "test@sentinel.dev").toString().trim().slice(0, 320) || "test@sentinel.dev";
+
+  req.session.user = {
+    id: "dev-" + crypto.randomBytes(8).toString("hex"),
+    email,
+    name,
+    picture: "",
+  };
+  req.session.tokens = null;
+  req.session.gmailMock = true;
+  res.json({ ok: true });
 });
 
 app.get("/auth/google", (req, res) => {
@@ -88,6 +196,7 @@ app.get("/auth/google/callback", async (req, res) => {
       picture: data.picture,
     };
     req.session.tokens = tokens;
+    req.session.gmailMock = false;
 
     res.redirect("/monitor");
   } catch (e) {
@@ -105,7 +214,11 @@ app.get("/api/auth/me", (req, res) => {
   if (!req.session?.user) {
     return res.status(401).json({ error: "Ej inloggad" });
   }
-  res.json({ user: req.session.user, hasGmail: !!req.session.tokens });
+  res.json({
+    user: req.session.user,
+    hasGmail: !!req.session.tokens,
+    gmailMock: !!req.session.gmailMock && !req.session.tokens,
+  });
 });
 
 // ── Gmail API helpers ─────────────────────────────────────────
@@ -150,6 +263,25 @@ function extractBody(payload) {
 
 app.get("/api/gmail/emails", requireAuth, async (req, res) => {
   try {
+    if (useGmailMock(req)) {
+      const maxResults = Math.min(parseInt(req.query.limit) || 10, 50);
+      const samples = getMockSampleEmails().slice(0, maxResults);
+      const results = samples.map((e, i) => ({
+        id: `mock-${i}`,
+        from: e.from,
+        subject: e.subject,
+        date: new Date().toISOString(),
+        returnPath: e.returnPath,
+        replyTo: e.replyTo,
+        spf: e.spf,
+        authResults: e.authResults,
+        headers: e.headers,
+        snippet: e.snippet,
+        bodyText: e.bodyText,
+      }));
+      return res.json({ emails: results, mock: true });
+    }
+
     const gmail = getGmailClient(req);
     if (!gmail) {
       return res.status(400).json({ error: "Gmail ej kopplad. Logga in med Google först." });
@@ -278,6 +410,9 @@ async function analyzeEmailWithAI(email) {
     (email.bodyText || "").slice(0, 3000),
   ].join("\n");
 
+  const openai = getOpenAI();
+  if (!openai) throw new Error("OPENAI_API_KEY saknas");
+
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
@@ -293,12 +428,36 @@ async function analyzeEmailWithAI(email) {
 
 app.post("/api/gmail/scan", requireAuth, async (req, res) => {
   try {
+    if (!getOpenAI()) {
+      return res.status(503).json({
+        error: "OPENAI_API_KEY saknas. Lägg till variabeln i Railway (Variables) eller i server/.env.",
+      });
+    }
+
+    const limit = Math.min(parseInt(req.body?.limit) || 10, 50);
+
+    if (useGmailMock(req)) {
+      const messages = getMockSampleEmails().slice(0, limit);
+      const analyses = [];
+      for (const email of messages) {
+        try {
+          const analysis = await analyzeEmailWithAI(email);
+          analyses.push({ from: email.from, subject: email.subject, analysis });
+        } catch {
+          analyses.push({
+            from: email.from,
+            subject: email.subject,
+            analysis: "Kunde inte analysera detta mejl.",
+          });
+        }
+      }
+      return res.json({ analyses, mock: true });
+    }
+
     const gmail = getGmailClient(req);
     if (!gmail) {
       return res.status(400).json({ error: "Gmail ej kopplad." });
     }
-
-    const limit = Math.min(parseInt(req.body?.limit) || 10, 50);
 
     const { data } = await gmail.users.messages.list({
       userId: "me",
@@ -398,6 +557,13 @@ Sammanfattning: [1-2 meningar som förklarar om sidan verkar äkta eller inte, o
 
 app.post("/analyze", async (req, res) => {
   try {
+    const openai = getOpenAI();
+    if (!openai) {
+      return res.status(503).json({
+        error: "OPENAI_API_KEY saknas. Lägg till variabeln i Railway eller server/.env.",
+      });
+    }
+
     const text = (req.body?.text || "").slice(0, 12000);
     const url = req.body?.url || "";
     if (!text.trim()) return res.status(400).json({ error: "Ingen text mottogs" });
@@ -425,6 +591,13 @@ app.post("/analyze", async (req, res) => {
 
 app.post("/analyze-email", async (req, res) => {
   try {
+    const openai = getOpenAI();
+    if (!openai) {
+      return res.status(503).json({
+        error: "OPENAI_API_KEY saknas. Lägg till variabeln i Railway eller server/.env.",
+      });
+    }
+
     const { headers = [], snippet = "", bodyText = "", from = "", returnPath = "", replyTo = "", spf = "", authResults = "" } = req.body || {};
     if (!headers.length && !snippet && !bodyText && !from) {
       return res.status(400).json({ error: "Ingen e-postdata mottogs" });
@@ -486,7 +659,10 @@ app.get("/", (req, res) => {
 });
 
 app.get("/health", (req, res) => {
-  res.json({ ok: true });
+  res.json({
+    ok: true,
+    openai: !!process.env.OPENAI_API_KEY?.trim(),
+  });
 });
 
 // ── Start ─────────────────────────────────────────────────────

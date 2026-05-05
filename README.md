@@ -32,6 +32,9 @@ PORT=3000
 GOOGLE_CLIENT_ID=din-web-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=din-client-secret
 SESSION_SECRET=valfri-hemlig-strang
+
+# Valfritt: lösenord för /login (test utan Google). Lämna tom i produktion om du inte behöver det.
+# DEV_LOGIN_SECRET=starkt-hemligt-lösenord
 ```
 
 ### 4. Aktivera Gmail API
@@ -63,11 +66,12 @@ Railpack hittar ofta inget Node-projekt i roten om bara `server/` har `package.j
 
 | Variabel | Beskrivning |
 |----------|-------------|
-| `OPENAI_API_KEY` | Din OpenAI-nyckel |
+| `OPENAI_API_KEY` | **Obligatorisk** för mejl-/sidanalys. Skapa på [platform.openai.com](https://platform.openai.com/api-keys) |
 | `GOOGLE_CLIENT_ID` | Web OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | Web OAuth client secret |
 | `GOOGLE_REDIRECT_URI` | `https://DIN-APP.up.railway.app/auth/google/callback` |
 | `SESSION_SECRET` | Lång slumpmässig sträng |
+| `DEV_LOGIN_SECRET` | Valfritt: aktiverar `/login` för test utan Google (fictiva mejl). **Ta bort eller lämna tom** när du bara vill ha riktig OAuth. |
 
 Lägg samma redirect-URL i Google Cloud → OAuth client → Authorized redirect URIs.
 
