@@ -1,3 +1,16 @@
+/**
+ * Sentinel – webbserver (Express)
+ *
+ * Ansvar: HTTP API, statiska sidor under public/, sessions, Google OAuth + Gmail,
+ *         OpenAI-anrop för mejl- och sidanalys. Single-file entry för enkel deploy.
+ *
+ * Viktiga begrepp:
+ * - requireAuth: skyddade sidor/API som kräver req.session.user
+ * - gmailMock: demo/test utan riktig Gmail (fictiva mejl)
+ * - getOpenAI(): lazy init så servern startar utan OPENAI_API_KEY
+ *
+ * Se docs/TEKNISK-DOKUMENTATION.md för route-lista och dataflöden.
+ */
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
