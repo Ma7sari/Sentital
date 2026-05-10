@@ -12,7 +12,6 @@ Mer detaljer ligger i mappen docs så den här filen inte blir för lång.
 - [Testrapport](docs/TESTRAPPORT.md) – vad vi testat och användartester  
 - [Hur vi jobbade (agilt)](docs/AGIL-PROCESS.md)  
 - [Användarmanual](docs/ANVÄNDARMANUAL.md)  
-- [Checklista innan inlämning](docs/CHECKLISTA-INLAMNING.md)  
 - [Var loggbok och backlog ska ligga](docs/VAR-LIGGER-VAD.md) – GitHub vs Google Drive m.m.
 
 Trello, Figma och Drive: vi har **inte** haft separata länkar dit. Vi har skrivit kort i docs och fokuserat på kod och test. Se **docs/VAR-LIGGER-VAD.md** om ni undrar var processen finns.
@@ -169,6 +168,5 @@ Om läraren vill se mer processdetalj finns det i commits på GitHub, docs/TESTR
 ## Inlämning (kursen Tillämpad programmering)
 
 - Repot ska vara publikt, eller bjud in **tbprogrammering** om det är privat
-- Kolla **docs/CHECKLISTA-INLAMNING.md** innan länken skickas in
 - Huvudbranch ska gå att starta med npm start i server/ med en .env enligt ovan
 - **OBS:** vi har ingen Figma/Drive-länk – förklaring under Externt material och i docs/VAR-LIGGER-VAD.md
