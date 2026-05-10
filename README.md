@@ -161,12 +161,7 @@ Det stora hotet mot skalbarhet just nu är att sessioner ligger i minnet på ser
 
 Kursen nämner ofta Trello, Figma och Google Drive. Vi har inte använt Figma – layout och färger har vi jobbat med direkt i HTML och CSS när vi byggde sidorna. Vi har inte heller lagt upp separata loggböcker eller långa dokument i Google Drive. Istället har vi skrivit kort i mappen docs och använt git-historik och meddelanden när vi planerat. Vi har prioriterat att testa och bygga fungerande kod.
 
-Om läraren vill se mer processdetalj finns det i commits på GitHub, docs/TESTRAPPORT.md (användartester) och docs/AGIL-PROCESS.md (hur veckorna fördelats).
+Om fina Jonas vill se mer processdetalj finns det i commits på GitHub, docs/TESTRAPPORT.md (användartester) och docs/AGIL-PROCESS.md (hur veckorna fördelats).
 
----
-
-## Inlämning (kursen Tillämpad programmering)
-
-- Repot ska vara publikt, eller bjud in **tbprogrammering** om det är privat
 - Huvudbranch ska gå att starta med npm start i server/ med en .env enligt ovan
 - **OBS:** vi har ingen Figma/Drive-länk – förklaring under Externt material och i docs/VAR-LIGGER-VAD.md
