@@ -20,9 +20,9 @@ Trello, Figma och Drive: vi har **inte** haft separata länkar dit. Vi har skriv
 
 ## Deltagare
 
-**Laith** har mest backend: Express, Google OAuth, Gmail API, OpenAI, Railway och säkerhet runt det.
+**Laith** har mest backend: Express, Google OAuth, Gmail API, OpenAI, Railway och säkerhet runt det. Samtidigt också tester ifall allting funkar som det ska.
 
-**Abbas** har mest frontend: landningssida, dashboard, flöde för användaren, och han har kört mycket av testningen med folk utanför gruppen.
+**Abbas** har mest frontend: landningssida, dashboard, flöde för användaren, och han har kört mycket av testningen med folk utanför gruppen för att kolla hur folk reagerar och beteende för hemsidan.
 
 ---
 
