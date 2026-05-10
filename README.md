@@ -161,7 +161,12 @@ Det stora hotet mot skalbarhet just nu är att sessioner ligger i minnet på ser
 
 Kursen nämner ofta Trello, Figma och Google Drive. Vi har inte använt Figma – layout och färger har vi jobbat med direkt i HTML och CSS när vi byggde sidorna. Vi har inte heller lagt upp separata loggböcker eller långa dokument i Google Drive. Istället har vi skrivit kort i mappen docs och använt git-historik och meddelanden när vi planerat. Vi har prioriterat att testa och bygga fungerande kod.
 
+Railway länken ifall den funkar: https://railway.com/project/38f12f42-aa31-4b3d-9a6a-613328ab1c2b/service/1f6f3d15-0146-480b-9f62-d176545c9f19/variables?environmentId=96d62807-a684-4f7c-a367-7f0841c32702
+Trello:https://trello.com/b/xPdMSuLN/min-trello-tavla
+
+
 Om fina Jonas vill se mer processdetalj finns det i commits på GitHub, docs/TESTRAPPORT.md (användartester) och docs/AGIL-PROCESS.md (hur veckorna fördelats).
 
 - Huvudbranch ska gå att starta med npm start i server/ med en .env enligt ovan
 - **OBS:** vi har ingen Figma/Drive-länk – förklaring under Externt material och i docs/VAR-LIGGER-VAD.md
+  
