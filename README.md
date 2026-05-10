@@ -1,97 +1,98 @@
-# Sentinel – AI-skydd mot e-postbedrägerier
+Sentinel – AI-skydd mot e-postbedrägerier
+En webbapp där du kopplar ihop ditt Gmail-konto och låter AI:n gå igenom dina mejl för att flagga phishing, spoofing och bluffmejl – innan du hinner klicka fel.
 
-Webbapp där användare kan koppla Gmail och få AI-analys av sina mejl för att upptäcka phishing, spoofing och scam.
+Deltagare
+NamnAnsvarLaithBackend (Express, Google OAuth, Gmail API), AI-integration (OpenAI), deployment på Railway, säkerhetslösningarAbbasFrontend (landningssida, dashboard-design), användarflöde, manuell testning och användartester
 
-## Snabbstart
+Beskrivning
+Sentinel skapades för att lösa ett verkligt problem – nätfiske och bluffmejl är ett av de vanligaste sätten folk blir lurade på nätet, och de flesta e-postklienter gör inte tillräckligt för att stoppa dem.
+Appen fungerar så här: du loggar in med ditt Google-konto, godkänner att appen får läsa dina mejl (read-only), och sedan kör AI:n igenom dina senaste meddelanden och ger varje mejl en risknivå: Låg, Medel eller Hög. Hög risk betyder att mejlet troligtvis är ett försök till phishing eller scam.
+Tekniskt sett bygger appen på en Node.js/Express-backend, Google OAuth 2.0 för inloggning, Gmail API för att hämta mejlen, och OpenAI:s API för att analysera innehållet. Hela appen är deployad på Railway med Docker.
 
-### 1. Installera beroenden
+Kom igång
+Förutsättningar
 
-```bash
-cd server
+Node.js 18+
+Ett Google Cloud-projekt med Gmail API aktiverat
+En OpenAI API-nyckel
+npm
+
+Installation
+Klona repot och installera beroenden:
+bashgit clone https://github.com/ditt-repo/sentinel.git
+cd sentinel/server
 npm install
-```
-
-### 2. Konfigurera Google OAuth (för webb)
-
-Du behöver en **Web application** OAuth-klient (inte Chrome extension):
-
-1. Gå till [Google Cloud Console](https://console.cloud.google.com/) → ditt projekt
-2. **APIs & Services** → **Credentials** → **Create Credentials** → **OAuth client ID**
-3. Välj **Application type: Web application**
-4. Lägg till **Authorized redirect URI**: `http://localhost:3000/auth/google/callback`
-5. Kopiera **Client ID** och **Client secret**
-
-### 3. Sätt miljövariabler
-
-Skapa/redigera `server/.env`:
-
-```
+Konfigurera miljövariabler
+Skapa en fil som heter .env inuti mappen server/ och fyll i följande:
 OPENAI_API_KEY=din-openai-nyckel
 PORT=3000
-
-GOOGLE_CLIENT_ID=din-web-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_ID=din-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=din-client-secret
-SESSION_SECRET=valfri-hemlig-strang
+SESSION_SECRET=valfri-hemlig-sträng
+Konfigurera Google OAuth
 
-# Valfritt: lösenord för /login (test utan Google). Lämna tom i produktion om du inte behöver det.
-# DEV_LOGIN_SECRET=starkt-hemligt-lösenord
-```
+Gå till Google Cloud Console
+Skapa ett projekt → APIs & Services → Credentials → OAuth client ID
+Välj Web application som typ
+Lägg till denna redirect URI: http://localhost:3000/auth/google/callback
+Aktivera Gmail API under APIs & Services → Library
+Om appen är i testläge: lägg till din Gmail-adress under OAuth consent screen → Test users
 
-### 4. Aktivera Gmail API
-
-1. Gå till [APIs & Services → Library](https://console.cloud.google.com/apis/library)
-2. Sök **Gmail API** → klicka **Enable**
-
-### 5. Lägg till testanvändare (om appen är i Testing)
-
-OAuth consent screen → Test users → Add users → din Gmail-adress
-
-### 6. Starta servern
-
-```bash
-cd server
+Köra programmet
+bashcd server
 npm start
-```
+Öppna sedan http://localhost:3000 i webbläsaren.
+Steg-för-steg:
 
-Öppna [http://localhost:3000](http://localhost:3000) i webbläsaren.
+Klicka på "Logga in med Google" på startsidan
+Godkänn åtkomst till Gmail (appen läser bara, skriver ingenting)
+Du kommer till dashboarden där dina mejl analyseras
+Varje mejl får en risknivå – Låg / Medel / Hög
 
-## Deploy på Railway
 
-Railpack hittar ofta inget Node-projekt i roten om bara `server/` har `package.json`. Det här repot har nu:
-
-- **`Dockerfile`** i roten – sätt i Railway **Root Directory** till `.` (repo root) så byggs containern från `server/`.
-- Alternativ: sätt **Root Directory** till `server` och **Start Command** till `node server.js` (ingen Docker).
-
-**Miljövariabler på Railway** (Variables):
-
-| Variabel | Beskrivning |
-|----------|-------------|
-| `OPENAI_API_KEY` | **Obligatorisk** för mejl-/sidanalys. Skapa på [platform.openai.com](https://platform.openai.com/api-keys) |
-| `GOOGLE_CLIENT_ID` | Web OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | Web OAuth client secret |
-| `GOOGLE_REDIRECT_URI` | `https://DIN-APP.up.railway.app/auth/google/callback` |
-| `SESSION_SECRET` | Lång slumpmässig sträng |
-| `DEV_LOGIN_SECRET` | Valfritt: aktiverar `/login` för test utan Google (fictiva mejl). **Ta bort eller lämna tom** när du bara vill ha riktig OAuth. |
-
-Lägg samma redirect-URL i Google Cloud → OAuth client → Authorized redirect URIs.
-
-## Flöde
-
-1. **Startsida** – Klicka "Logga in med Google"
-2. **Google** – Godkänn åtkomst till Gmail (readonly)
-3. **Dashboard** – Skanna dina mejl, se risknivåer (Låg/Medel/Hög)
-
-## Projektstruktur
-
-```
-extension-main/
+Projektstruktur
+sentinel/
 ├── server/
-│   ├── server.js      # Express + OAuth + Gmail API + AI
+│   ├── server.js          # Huvudservern – Express, OAuth, Gmail API, AI-logik
 │   ├── public/
-│   │   ├── index.html # Landningssida + login
-│   │   └── dashboard.html
-│   ├── .env
+│   │   ├── index.html     # Landningssida och login
+│   │   └── dashboard.html # Mejlanalys och riskvyer
+│   ├── .env               # Miljövariabler (läggs inte upp på GitHub)
 │   └── package.json
-├── extension/         # Chrome extension (valfritt)
-└── website/           # Statisk landningssida (valfritt)
-```
+├── extension/             # Chrome-extension (valfri del av projektet)
+├── website/               # Statisk landningssida
+├── Dockerfile
+└── README.md
+
+Säkerhet
+
+Appen använder Google OAuth 2.0 – vi lagrar aldrig användarens lösenord
+Gmail-åtkomsten är read-only – appen kan inte skicka, radera eller ändra mejl
+API-nycklar och hemliga strängar lagras i .env och finns inte i repot (se .gitignore)
+Sessions hanteras server-side med en slumpmässig SESSION_SECRET
+På Railway används miljövariabler direkt via deras dashboard – inga känsliga filer i produktionsmiljön
+
+
+Testning
+Testning skedde i två steg:
+Kodtester: Vi testade OAuth-flödet manuellt med olika Gmail-konton och verifierade att API-anropen returnerade rätt data. Vi testade även edge cases som mejl utan ämnesrad och mejl på andra språk.
+Användartester: Vi lät tre personer utanför projektet testa appen. Feedback ledde till att vi förtydligade login-knappen och lade till en laddningsindikator under AI-analysen.
+Åtgärdslista efter användartester:
+
+ Lade till loading-spinner under analys
+ Förtydligade vad "read-only" innebär på landningssidan
+ Mobilanpassning av dashboard (planerat i nästa sprint)
+
+
+Skalbarhet
+Just nu analyseras mejl manuellt när användaren begär det. Framöver skulle appen kunna:
+
+Köra automatiska analyser i bakgrunden med schemalagda jobb
+Stödja fler e-posttjänster (Outlook, Yahoo)
+Spara historik i en databas (t.ex. PostgreSQL) så användaren kan se trender
+Lägga till notiser – t.ex. push eller SMS – när ett högrisk-mejl dyker upp
+Bygga ut Chrome-extensionen så analysen sker direkt i Gmail-gränssnittet
+
+
+Externt material
+
